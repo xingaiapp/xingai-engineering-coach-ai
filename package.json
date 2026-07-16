@@ -1,0 +1,27 @@
+{
+  "name": "xingai-engineering-coach-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Help non-native English-speaking engineers communicate like senior engineers and engineering managers.",
+  "scripts": {
+    "dev": "next dev --port 3006",
+    "build": "next build",
+    "vercel-build": "next build",
+    "start": "next start --port 3006",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.2.4",
+    "react": "^19",
+    "react-dom": "^19"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "5.7.3"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}
