@@ -1,6 +1,6 @@
 {
   "name": "xingai-engineering-coach-ai",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Help non-native English-speaking engineers communicate like senior engineers and engineering managers.",
   "scripts": {

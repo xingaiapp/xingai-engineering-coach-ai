@@ -1,55 +1,59 @@
 # XingAI Engineering English Coach
 
-**Version:** 0.1.0 (scaffold)  
-**Repo:** [xingaiapp/xingai-engineering-coach-ai](https://github.com/xingaiapp/xingai-engineering-coach-ai)
+**Version:** 0.1.1  
+**Repo:** [xingaiapp/xingai-engineering-coach-ai](https://github.com/xingaiapp/xingai-engineering-coach-ai)  
+**Planned URL:** https://engineering-coach.xingai.app
 
 Help non-native English-speaking engineers communicate like senior engineers and
-engineering managers — not just with correct grammar, but with risk, decision,
-impact, ownership, and next-step language.
+engineering managers — risk, decision, impact, ownership, and next-step language.
 
 **Tagline:** Communicate like a senior engineer—not just a fluent English speaker.
 
-## Status (0.1.0)
+中文: [README.zh.md](README.zh.md)
 
-Runnable local scaffold as of 2026-07-16:
+## Status (0.1.1) — project-init baseline
 
-- Shared `Decision` ledger shape (`lib/decision-ledger.ts`, `lib/types.ts`),
-  adopted instead of inventing a bespoke memory schema — see
-  `docs/adr/001-decision-ledger-adoption.md`.
-- i18n helper (`lib/i18n.ts`) — `tr(lang, en, zh)`; ko planned per XingAI foundation.
-- Deterministic scenario bank + rule-based reviewer (`lib/scenario-bank.ts`,
-  `lib/review-engine.ts`) — runs with zero API keys.
-- Optional real-LLM path (`lib/llm-client.ts`, `lib/prompts.ts`) — upgrades
-  automatically when `ANTHROPIC_API_KEY` is set, falls back to the
-  deterministic path on any error.
-- Full `app/` UI: profile settings, daily exercise, line-by-line review,
-  polished version, reusable phrases, Accept/Edit/Reject wired to the ledger,
-  recurring weak-areas view.
-- API routes: `app/api/exercise`, `app/api/review`, `app/api/decisions`.
-- SEO metadata + AEO `FAQPage` JSON-LD (`app/layout.tsx`).
+- Mobile-first chrome: top bar, drawer, bottom tabs, desktop side nav (open/collapsed)
+- Locales: **en / zh / ko** (persisted); light + dark theme (no-flash boot)
+- Hero light/dark pair: `public/brand/hero-bg-light-visual.png` + `hero-bg-visual.png`
+- Favicon / app icon: `app/icon.svg` + `public/icon.svg`
+- Legal (EN+中文+한국어 on each page): `/legal/privacy`, `/legal/terms`, `/legal/disclaimer`
+- SEO/AEO: metadata + OG/Twitter, `public/robots.txt`, `public/sitemap.xml`, `public/llms.txt`, FAQ + SoftwareApplication JSON-LD
+- Registered on [xingai.app](https://xingai.app) apps catalog as **coming soon** (`engineering-coach`)
+- Deterministic scenario + review engines; optional Anthropic upgrade via `ANTHROPIC_API_KEY`
+- Decision ledger shape: `docs/adr/001-decision-ledger-adoption.md`
 
 ### Getting started
 
 ```bash
+cp .env.example .env.local   # optional ANTHROPIC_API_KEY
 npm install
 npm run dev
-# open http://localhost:3006
+# http://localhost:3006
 ```
 
-**Not yet:** persistent storage (in-memory only), Email/Push delivery
-channels, Weekly Progress Report generation, ko locale. Do not treat this as
-production-ready.
+### Scripts
+
+| Command | Purpose |
+|---------|---------|
+| `npm run dev` | Local Next.js on port 3006 |
+| `npm run build` | Production build |
+| `npm run lint` | `tsc --noEmit` |
+
+### Deploy notes
+
+- Vercel: see `vercel.json` (`npm ci` + `next build`)
+- Set `SITE_URL=https://engineering-coach.xingai.app` in production
+- Domain not required for local demo; mark **Soon** on marketing until live
+
+**Still not production-ready:** in-memory session storage only; no Email/Push; no weekly report worker.
 
 ## Architecture
 
-- **Worker-style split**: `lib/exercise-engine.ts` / `lib/review-engine.ts`
-  hold all generation/scoring logic; `app/api/*/route.ts` routes stay thin
-  and only orchestrate.
-- **Theme**: CSS variable tokens in `app/globals.css`, light + dark pairs,
-  same structure as `xingai-meal-coach-ai`.
+- Thin API routes; generation/scoring in `lib/*-engine.ts`
+- Theme tokens in `app/globals.css` (`data-theme`)
 
 ## Disclaimer
 
-Educational / informational scaffold only. See [DISCLAIMER.md](DISCLAIMER.md).
-XingAI gives no warranty. Users are responsible for their own use, deployment,
-compliance, and outcomes.
+Educational / informational only. See [DISCLAIMER.md](DISCLAIMER.md).
+XingAI gives no warranty. Verify suggested wording before sending it.

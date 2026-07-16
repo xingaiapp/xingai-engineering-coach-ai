@@ -1,0 +1,42 @@
+# XingAI Engineering English Coach
+
+- URL: https://engineering-coach.xingai.app
+- Product: Daily workplace English practice for non-native engineers — risk, decision, ownership, and next-step language.
+- Publisher: XingAI (https://xingai.app)
+- Languages: English, 中文, 한국어 (UI locale switch in header)
+- Source: https://github.com/xingaiapp/xingai-engineering-coach-ai
+
+## Main user flow
+
+1. Set profile (native language, English level, current/target role, feedback language).
+2. Generate today's engineering workplace scenario.
+3. Write 5–10 sentences in English.
+4. Get line-by-line review, polished version, reusable phrases, and scores.
+5. Accept / Edit / Reject — recorded as a Decision ledger row (session-scoped).
+
+## FAQ
+
+Q: How is this different from Grammarly?
+A: Grammarly corrects grammar. This coach teaches how senior engineers communicate risk, decisions, impact, ownership, and next steps.
+
+Q: How long does daily practice take?
+A: About 10–15 minutes.
+
+Q: Do I need an API key?
+A: No. A deterministic scenario bank and rule-based reviewer run locally. An Anthropic API key optionally upgrades review quality.
+
+Q: Which languages are supported?
+A: UI in English, Chinese, and Korean. Feedback can be English, Chinese, or bilingual.
+
+Q: Is this certified language assessment?
+A: No. Communication practice only — not a certified exam or professional advice.
+
+## Legal
+
+- Privacy: https://engineering-coach.xingai.app/legal/privacy
+- Terms: https://engineering-coach.xingai.app/legal/terms
+- Disclaimer: https://engineering-coach.xingai.app/legal/disclaimer
+
+## Disclaimer (one line)
+
+Educational communication practice only; verify before sending AI-suggested wording to coworkers or managers.
