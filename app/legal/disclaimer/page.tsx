@@ -3,9 +3,9 @@ import Link from "next/link";
 import "../../globals.css";
 
 export const metadata: Metadata = {
-  title: "Disclaimer · XingAI Engineering English Coach",
+  title: "Disclaimer · XingAI Engineering Communication Coach",
   description:
-    "Disclaimer for XingAI Engineering English Coach — practice only, not certified assessment.",
+    "Disclaimer for XingAI Engineering Communication Coach — practice only, not certified assessment.",
   alternates: { canonical: "/legal/disclaimer" },
 };
 
@@ -23,7 +23,7 @@ export default function DisclaimerPage() {
   return (
     <main className="legal-page">
       <p className="legal-back">
-        <Link href="/">← Engineering English Coach</Link>
+        <Link href="/">← Engineering Communication Coach</Link>
       </p>
 
       <article className="legal-article" lang="en">

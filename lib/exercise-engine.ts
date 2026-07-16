@@ -1,35 +1,38 @@
-import { SCENARIO_BANK } from "./scenario-bank";
+import { scenarioForDay, DAILY_CLOSING } from "./scenario-bank";
+import { resolveCurriculumDay } from "./curriculum";
 import { dailyExercisePrompt, SYSTEM_PROMPT } from "./prompts";
 import { callClaude, isAvailable, LLMError } from "./llm-client";
-import type { DailyExercise, UserLearningProfile } from "./types";
+import type { DailyExercise, ExerciseCategory, UserLearningProfile } from "./types";
 
 function generateId(): string {
   return `ex_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function pickScenario(recentCategories: string[]) {
-  const unused = SCENARIO_BANK.filter((s) => !recentCategories.includes(s.category));
-  const pool = unused.length > 0 ? unused : SCENARIO_BANK;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
+function generateHeuristicExercise(profile: UserLearningProfile): DailyExercise {
+  const dayNumber = Math.max(1, profile.curriculumDay || 1);
+  const template = scenarioForDay(dayNumber);
+  const curriculum = resolveCurriculumDay(dayNumber);
 
-/** Deterministic fallback — always available, no API key required. */
-function generateHeuristicExercise(
-  profile: UserLearningProfile,
-  recentCategories: string[],
-): DailyExercise {
-  const template = pickScenario(recentCategories);
   return {
     id: generateId(),
     userId: profile.userId,
-    title: template.title,
+    dayNumber,
+    skillTitle: template.skillTitle || curriculum.skillEn,
+    skillTitleZh: template.skillTitleZh || curriculum.skillZh,
+    skillWhyZh: template.skillWhyZh || curriculum.whyItMattersZh,
+    title: template.title.replace(/^Day \d+/, `Day ${dayNumber}`),
     category: template.category,
+    scenarioType: template.scenarioType,
     scenario: template.scenario,
     role: template.role,
     audience: template.audience,
+    problem: template.problem,
     communicationGoal: template.communicationGoal,
+    potentialRisk: template.potentialRisk,
     requiredPoints: template.requiredPoints,
+    hints: template.hints,
     optionalOpeningSentence: template.optionalOpeningSentence,
+    closingPrompt: DAILY_CLOSING,
     difficulty: template.difficulty,
     scheduledAt: new Date().toISOString(),
     status: "delivered",
@@ -37,53 +40,45 @@ function generateHeuristicExercise(
   };
 }
 
-/** Best-effort LLM path — falls back to the heuristic bank on any error. */
 export async function generateExercise(
   profile: UserLearningProfile,
-  recentCategories: string[] = [],
+  _recentCategories: string[] = [],
 ): Promise<DailyExercise> {
+  const dayNumber = Math.max(1, profile.curriculumDay || 1);
+  const curriculum = resolveCurriculumDay(dayNumber);
+
   if (!isAvailable()) {
-    return generateHeuristicExercise(profile, recentCategories);
+    return generateHeuristicExercise(profile);
   }
 
   try {
-    const raw = await callClaude(SYSTEM_PROMPT, dailyExercisePrompt(profile));
-    const parsed = parseExerciseText(raw);
+    const raw = await callClaude(
+      SYSTEM_PROMPT,
+      dailyExercisePrompt(
+        profile,
+        dayNumber,
+        curriculum.skillEn,
+        curriculum.skillZh,
+        curriculum.whyItMattersZh,
+      ),
+    );
+    const parsed = parseExerciseText(raw, dayNumber, curriculum.category);
     if (!parsed) {
       throw new LLMError("could not parse LLM exercise output");
     }
-    return {
-      id: generateId(),
-      userId: profile.userId,
-      title: parsed.title,
-      category: pickScenario(recentCategories).category, // best-effort category tag
-      scenario: parsed.scenario,
-      role: parsed.role,
-      audience: parsed.audience,
-      communicationGoal: parsed.communicationGoal,
-      requiredPoints: parsed.requiredPoints,
-      optionalOpeningSentence: parsed.optionalOpeningSentence,
-      difficulty: 3,
-      scheduledAt: new Date().toISOString(),
-      status: "delivered",
-      source: "llm",
-    };
+    return parsed;
   } catch {
-    return generateHeuristicExercise(profile, recentCategories);
+    return generateHeuristicExercise(profile);
   }
 }
 
-function parseExerciseText(text: string): {
-  title: string;
-  scenario: string;
-  role: string;
-  audience: string;
-  communicationGoal: string;
-  requiredPoints: string[];
-  optionalOpeningSentence: string;
-} | null {
+function parseExerciseText(
+  text: string,
+  dayNumber: number,
+  fallbackCategory: ExerciseCategory,
+): DailyExercise | null {
   const field = (label: string): string => {
-    const re = new RegExp(`${label}:\\s*([\\s\\S]*?)(?=\\n[A-Z][\\w ]*:|$)`, "i");
+    const re = new RegExp(`${label}:\\s*([\\s\\S]*?)(?=\\n[A-Z][\\w /+]+:|$)`, "i");
     const match = text.match(re);
     return match ? match[1].trim() : "";
   };
@@ -94,18 +89,37 @@ function parseExerciseText(text: string): {
     return null;
   }
 
-  const points = field("Include these points")
+  const hints = (field("Hints") || "")
     .split("\n")
     .map((line) => line.replace(/^[-*]\s*/, "").trim())
     .filter(Boolean);
 
+  const curriculum = resolveCurriculumDay(dayNumber);
+
   return {
+    id: generateId(),
+    userId: "local-demo-user",
+    dayNumber,
+    skillTitle: field("Skill EN") || curriculum.skillEn,
+    skillTitleZh: field("Skill ZH") || curriculum.skillZh,
+    skillWhyZh: field("Why ZH") || curriculum.whyItMattersZh,
     title,
+    category: fallbackCategory,
+    scenarioType: field("Scenario type") || curriculum.scenarioType,
     scenario,
     role: field("Your role") || "Engineer",
     audience: field("Audience") || "Team",
-    communicationGoal: field("Communication goal") || "Communicate clearly and professionally.",
-    requiredPoints: points.length > 0 ? points : ["Cover the situation clearly."],
-    optionalOpeningSentence: field("Optional opening sentence"),
+    problem: field("Problem") || "Communicate clearly in a real engineering situation.",
+    communicationGoal:
+      field("Communication goal") || "Communicate clearly and professionally.",
+    potentialRisk: field("Potential risk") || "Unclear or unconfident delivery.",
+    requiredPoints: hints.length > 0 ? hints.slice(0, 3) : ["Cover the situation clearly."],
+    hints: hints.length > 0 ? hints : ["Be specific", "State the risk", "Propose a next step"],
+    optionalOpeningSentence: "",
+    closingPrompt: field("Closing") || DAILY_CLOSING,
+    difficulty: 3,
+    scheduledAt: new Date().toISOString(),
+    status: "delivered",
+    source: "llm",
   };
 }

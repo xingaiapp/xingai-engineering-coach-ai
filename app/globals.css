@@ -369,6 +369,80 @@ textarea:focus {
   line-height: 1.4;
 }
 
+.sentence-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.sentence-review .issue {
+  margin: 4px 0;
+  color: var(--amber);
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+
+.faq-list {
+  display: grid;
+  gap: 10px;
+}
+
+.faq-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card-soft);
+  padding: 4px 12px 8px;
+}
+
+.faq-item summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 750;
+  font-size: 0.92rem;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item p {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.review-table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.review-table th,
+.review-table td {
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  vertical-align: top;
+  text-align: left;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.review-table th {
+  background: var(--card-soft);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.levels-grid {
+  display: grid;
+  gap: 10px;
+}
+
 .polished-box {
   border: 1px solid var(--primary-ring);
   border-radius: 12px;
@@ -405,8 +479,73 @@ textarea:focus {
 
 @media (min-width: 640px) {
   .score-grid {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+@media (min-width: 900px) {
+  .score-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.field-hint {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.skill-why {
+  border-left: 3px solid var(--primary);
+  padding-left: 12px;
+  color: var(--foreground);
+  line-height: 1.5;
+}
+
+.hints-box {
+  margin: 12px 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card-soft);
+  padding: 10px 12px;
+}
+
+.closing-prompt {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--accent-active);
+  border: 1px solid var(--primary-ring);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  font-style: italic;
+}
+
+.level-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card-soft);
+  padding: 12px;
+}
+
+.level-card .label {
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.level-card p {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 0.92rem;
+}
+
+.voice-box {
+  white-space: pre-wrap;
 }
 
 .score-card {

@@ -1,32 +1,33 @@
-# XingAI Engineering English Coach
+# XingAI Engineering Communication Coach
 
 - URL: https://engineering-coach.xingai.app
-- Product: Daily workplace English practice for non-native engineers — risk, decision, ownership, and next-step language.
+- Product: 10–15 minute daily training for non-native engineers — trust, conflict, feedback, charisma, and leadership English in real software-engineering scenarios (Azure, .NET, APIs, incidents, design reviews).
 - Publisher: XingAI (https://xingai.app)
-- Languages: English, 中文, 한국어 (UI locale switch in header)
+- Languages: English, 中文, 한국어 (UI); explanations default to Simplified Chinese when feedback language is zh/bilingual
 - Source: https://github.com/xingaiapp/xingai-engineering-coach-ai
+- Curriculum: 14-day core loop, then advanced (executive, architecture influence, incident leadership, negotiation)
 
 ## Main user flow
 
-1. Set profile (native language, English level, current/target role, feedback language).
-2. Generate today's engineering workplace scenario.
-3. Write 5–10 sentences in English.
-4. Get line-by-line review, polished version, reusable phrases, and scores.
-5. Accept / Edit / Reject — recorded as a Decision ledger row (session-scoped).
+1. Set profile (native language, level, role, curriculum day).
+2. Open today's skill + real engineering scenario (hints only — no full answer yet).
+3. Write 5–10 English sentences.
+4. Get line-by-line review, Level 1/2/3 rewrites, final version, reusable expressions, voice coaching, micro practice, and one focus area.
+5. Accept / Edit / Reject — Decision ledger row; Accept advances curriculum day.
 
 ## FAQ
 
 Q: How is this different from Grammarly?
-A: Grammarly corrects grammar. This coach teaches how senior engineers communicate risk, decisions, impact, ownership, and next steps.
+A: Grammarly corrects grammar. This coach trains senior workplace communication: risk, trust, disagreement, and next steps.
 
-Q: How long does daily practice take?
+Q: How long is each session?
 A: About 10–15 minutes.
 
 Q: Do I need an API key?
-A: No. A deterministic scenario bank and rule-based reviewer run locally. An Anthropic API key optionally upgrades review quality.
+A: No. A deterministic 14-day scenario bank and rule-based reviewer run locally. An Anthropic API key optionally upgrades quality.
 
 Q: Which languages are supported?
-A: UI in English, Chinese, and Korean. Feedback can be English, Chinese, or bilingual.
+A: UI in English, Chinese, and Korean. Coaching explanations prefer Simplified Chinese when configured.
 
 Q: Is this certified language assessment?
 A: No. Communication practice only — not a certified exam or professional advice.

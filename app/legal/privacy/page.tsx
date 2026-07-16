@@ -3,8 +3,8 @@ import Link from "next/link";
 import "../../globals.css";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy · XingAI Engineering English Coach",
-  description: "Privacy Policy for XingAI Engineering English Coach.",
+  title: "Privacy Policy · XingAI Engineering Communication Coach",
+  description: "Privacy Policy for XingAI Engineering Communication Coach.",
   alternates: { canonical: "/legal/privacy" },
 };
 
@@ -22,7 +22,7 @@ export default function PrivacyPage() {
   return (
     <main className="legal-page">
       <p className="legal-back">
-        <Link href="/">← Engineering English Coach</Link>
+        <Link href="/">← Engineering Communication Coach</Link>
       </p>
 
       <article className="legal-article" lang="en">

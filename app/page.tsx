@@ -172,8 +172,12 @@ export default function Page() {
   useEffect(() => {
     const storedLang = localStorage.getItem(LANG_STORAGE_KEY) as Lang | null;
     const storedTheme = localStorage.getItem(THEME_STORAGE_KEY) as "dark" | "light" | null;
+    const storedDay = Number(localStorage.getItem("xingai_eec_day") || "1");
     if (storedLang === "en" || storedLang === "zh" || storedLang === "ko") setLang(storedLang);
     if (storedTheme === "dark" || storedTheme === "light") setTheme(storedTheme);
+    if (Number.isFinite(storedDay) && storedDay >= 1) {
+      setProfile((p) => ({ ...p, curriculumDay: storedDay }));
+    }
     setHydrated(true);
   }, []);
 
@@ -234,7 +238,12 @@ export default function Page() {
   async function recordAction(action: "followed" | "modified" | "ignored") {
     if (!review?.decisionId) return;
     setActionTaken(action);
-    if (action !== "ignored") setStreak((s) => s + 1);
+    if (action !== "ignored") {
+      setStreak((s) => s + 1);
+      const nextDay = (profile.curriculumDay || 1) + 1;
+      setProfile((p) => ({ ...p, curriculumDay: nextDay }));
+      localStorage.setItem("xingai_eec_day", String(nextDay));
+    }
     await fetch("/api/decisions", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -314,7 +323,7 @@ export default function Page() {
               <Icon name="book" size={18} />
             </span>
             <span className="brand-title">
-              {tr(lang, "Engineering English Coach", "工程英语教练", "엔지니어링 영어 코치")}
+              {tr(lang, "Engineering Communication Coach", "工程沟通教练", "엔지니어링 커뮤니케이션 코치")}
             </span>
           </div>
           <div className="header-controls">
@@ -347,9 +356,9 @@ export default function Page() {
               <p className="eyebrow">
                 {tr(
                   lang,
-                  "XingAI Engineering English Coach",
-                  "XingAI 工程英语教练",
-                  "XingAI 엔지니어링 영어 코치",
+                  "XingAI Engineering Communication Coach",
+                  "XingAI 工程沟通与魅力教练",
+                  "XingAI 엔지니어링 커뮤니케이션 코치",
                 )}
               </p>
               <h1>
@@ -363,9 +372,9 @@ export default function Page() {
               <p className="hero-text">
                 {tr(
                   lang,
-                  "Not just fluent English — the language of engineering risk, decisions, ownership, and next steps. 10 minutes a day.",
-                  "不只是流利的英语——而是工程师表达风险、决策、责任和下一步的方式。每天 10 分钟。",
-                  "유창한 영어만이 아니라 리스크·결정·책임·다음 단계의 엔지니어 언어. 하루 10분.",
+                  "Not grammar drills — charisma, trust, conflict, and leadership English for real Azure/.NET engineering work. 10–15 minutes a day.",
+                  "不是语法课——而是真实 Azure/.NET 工程场景里的信任、冲突、反馈与领导力英语。每天 10–15 分钟。",
+                  "문법 드릴이 아니라 Azure/.NET 현장의 신뢰·갈등·피드백·리더십 영어. 하루 10–15분.",
                 )}
               </p>
               <div className="btn-row hero-cta">
@@ -466,53 +475,121 @@ export default function Page() {
                   ))}
                 </select>
               </label>
+              <label className="field">
+                <span>{tr(lang, "Curriculum day", "课程天数", "커리큘럼 일차")}</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={99}
+                  value={profile.curriculumDay}
+                  onChange={(e) => {
+                    const day = Math.max(1, Number(e.target.value) || 1);
+                    setProfile({ ...profile, curriculumDay: day });
+                    localStorage.setItem("xingai_eec_day", String(day));
+                  }}
+                />
+              </label>
             </div>
+            <p className="field-hint">
+              {tr(
+                lang,
+                "Days 1–14 follow the core curriculum; day 15+ cycles advanced topics (executive, architecture influence, incidents…).",
+                "第 1–14 天为核心课程；第 15 天起进入进阶主题（高管汇报、架构影响、事故领导力等）。",
+                "1–14일은 핵심 커리큘럼, 15일부터는 고급 주제(임원 보고·아키텍처 영향·장애 리더십 등)를 순환합니다.",
+              )}
+            </p>
           </section>
 
           <section className="card" id="practice" aria-label="Today's exercise">
             <h2>
               <Icon name="target" />
-              {tr(lang, "Today's exercise", "今日练习", "오늘의 연습")}
+              {tr(lang, "Today's training", "今日训练", "오늘의 훈련")}
             </h2>
             {!exercise ? (
               <button className="btn btn-primary" onClick={fetchExercise} disabled={loadingExercise}>
                 <Icon name="sparkles" />
                 {loadingExercise
                   ? tr(lang, "Generating…", "生成中…", "생성 중…")
-                  : tr(lang, "Generate today's exercise", "生成今日练习", "오늘 연습 생성")}
+                  : tr(
+                      lang,
+                      `Start Day ${profile.curriculumDay}`,
+                      `开始第 ${profile.curriculumDay} 天`,
+                      `${profile.curriculumDay}일차 시작`,
+                    )}
               </button>
             ) : (
               <>
                 <div className="scenario-meta">
                   <span className={`source-badge ${exercise.source}`}>{exercise.source}</span>
-                  <span>{exercise.category.replaceAll("_", " ")}</span>
+                  <span>
+                    Day {exercise.dayNumber}
+                  </span>
+                  <span>{exercise.scenarioType}</span>
                   <span>
                     {tr(lang, "difficulty", "难度", "난이도")} {exercise.difficulty}/5
                   </span>
                 </div>
-                <h3 style={{ marginTop: 0 }}>{exercise.title}</h3>
-                <p>{exercise.scenario}</p>
+
+                <h3 style={{ marginTop: 0 }}>
+                  Day {exercise.dayNumber} — {exercise.skillTitle}
+                </h3>
+                <p className="skill-why">
+                  <strong>{tr(lang, "Today's goal: ", "今天的目标：", "오늘 목표: ")}</strong>
+                  {lang === "en" ? exercise.skillTitle : exercise.skillTitleZh}
+                  {" — "}
+                  {exercise.skillWhyZh}
+                </p>
+
                 <p>
-                  <strong>{tr(lang, "Your role: ", "你的角色:", "역할: ")}</strong>
+                  <strong>{tr(lang, "Real scenario: ", "真实场景：", "실제 시나리오: ")}</strong>
+                  {exercise.scenario}
+                </p>
+                <p>
+                  <strong>{tr(lang, "Your role: ", "你的角色：", "역할: ")}</strong>
                   {exercise.role} ·{" "}
-                  <strong>{tr(lang, "Audience: ", "受众:", "청중: ")}</strong>
+                  <strong>{tr(lang, "Audience: ", "对方：", "청중: ")}</strong>
                   {exercise.audience}
                 </p>
                 <p>
-                  <strong>{tr(lang, "Goal: ", "目标:", "목표: ")}</strong>
+                  <strong>{tr(lang, "Problem: ", "当前问题：", "문제: ")}</strong>
+                  {exercise.problem}
+                </p>
+                <p>
+                  <strong>{tr(lang, "Goal: ", "沟通目标：", "목표: ")}</strong>
                   {exercise.communicationGoal}
                 </p>
-                <ul className="required-points">
-                  {exercise.requiredPoints.map((p) => (
-                    <li key={p}>{p}</li>
-                  ))}
-                </ul>
+                <p>
+                  <strong>{tr(lang, "Risk / conflict: ", "潜在风险：", "리스크/갈등: ")}</strong>
+                  {exercise.potentialRisk}
+                </p>
+
+                <p>
+                  <strong>{tr(lang, "Your task: ", "你的任务：", "과제: ")}</strong>
+                  {tr(
+                    lang,
+                    "Write 5–10 English sentences for this situation.",
+                    "用英文写 5–10 句应对此场景。",
+                    "이 상황에 맞는 영어 5–10문장을 작성하세요.",
+                  )}
+                </p>
+
+                <div className="hints-box">
+                  <div className="label">{tr(lang, "Hints", "提示", "힌트")}</div>
+                  <ul className="required-points">
+                    {(exercise.hints?.length ? exercise.hints : exercise.requiredPoints).map((p) => (
+                      <li key={p}>{p}</li>
+                    ))}
+                  </ul>
+                </div>
+
                 {exercise.optionalOpeningSentence ? (
                   <p className="opening-line">
-                    {tr(lang, "Optional opening: ", "开头句(可选):", "시작 문장(선택): ")}
+                    {tr(lang, "Optional opening: ", "开头句(可选)：", "시작 문장(선택): ")}
                     {exercise.optionalOpeningSentence}
                   </p>
                 ) : null}
+
+                <p className="closing-prompt">{exercise.closingPrompt}</p>
 
                 <label className="field" style={{ marginTop: 14 }}>
                   <span>{tr(lang, "Write 5–10 sentences", "写 5–10 句英文", "영어 5–10문장 작성")}</span>
@@ -541,7 +618,7 @@ export default function Page() {
                   </button>
                   <button className="btn" onClick={fetchExercise} disabled={loadingExercise}>
                     <Icon name="refresh" />
-                    {tr(lang, "New scenario", "换一个场景", "다른 시나리오")}
+                    {tr(lang, "Reload day", "重新加载今日", "오늘 다시 불러오기")}
                   </button>
                 </div>
               </>
@@ -554,37 +631,101 @@ export default function Page() {
                 <Icon name="edit" />
                 {tr(lang, "Line-by-line review", "逐句评审", "문장별 리뷰")}
               </h2>
-              {review.sentenceReviews.map((s, i) => (
-                <div className="sentence-review" key={i}>
-                  <div className="label">{tr(lang, "Original", "原句", "원문")}</div>
-                  <p className="original">{s.original}</p>
-                  <div className="label">{tr(lang, "Improved", "修改后", "개선")}</div>
-                  <p className="improved">{s.improved}</p>
-                  <p className="why">{s.explanation}</p>
-                </div>
-              ))}
+              <div className="sentence-stack">
+                {review.sentenceReviews.map((s, i) => (
+                  <article className="sentence-review" key={i}>
+                    <div className="label">{tr(lang, "Original", "用户原句", "원문")}</div>
+                    <p className="original">{s.original}</p>
+                    <div className="label">{tr(lang, "Improved", "改进版本", "개선")}</div>
+                    <p className="improved">{s.improved}</p>
+                    <div className="label">{tr(lang, "Issue", "问题", "이슈")}</div>
+                    <p className="issue">{s.issue}</p>
+                    <div className="label">{tr(lang, "Why more natural", "为什么更自然", "왜 더 자연스러운지")}</div>
+                    <p className="why">{s.explanation}</p>
+                  </article>
+                ))}
+              </div>
 
               <h2 style={{ marginTop: 18 }}>
-                {tr(lang, "Professional polished version", "专业润色版本", "전문 교정본")}
+                {tr(lang, "Three levels of improvement", "三层改进", "3단계 개선")}
+              </h2>
+              <div className="levels-grid">
+                <div className="level-card">
+                  <div className="label">Level 1 — Correct</div>
+                  <p>{review.levels?.correct ?? review.polishedVersion}</p>
+                </div>
+                <div className="level-card">
+                  <div className="label">Level 2 — Natural</div>
+                  <p>{review.levels?.natural ?? review.polishedVersion}</p>
+                </div>
+                <div className="level-card">
+                  <div className="label">Level 3 — Senior / Leadership</div>
+                  <p>{review.levels?.senior ?? review.polishedVersion}</p>
+                </div>
+              </div>
+
+              <h2 style={{ marginTop: 18 }}>
+                {tr(lang, "Final professional version", "最终专业版本", "최종 전문 버전")}
               </h2>
               <div className="polished-box">{review.polishedVersion}</div>
 
               <h2 style={{ marginTop: 18 }}>
-                {tr(lang, "Reusable phrases", "可复用表达", "재사용 표현")}
+                {tr(lang, "Reusable expressions", "可复用表达", "재사용 표현")}
               </h2>
-              <ul className="phrase-list">
-                {review.reusablePhrases.map((p) => (
-                  <li key={p}>{p}</li>
-                ))}
-              </ul>
+              <div className="weak-areas-table-wrap">
+                <table className="review-table">
+                  <thead>
+                    <tr>
+                      <th>English Expression</th>
+                      <th>{tr(lang, "Meaning", "中文意思", "의미")}</th>
+                      <th>{tr(lang, "Use when", "使用场景", "사용 장면")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(review.reusableExpressions?.length
+                      ? review.reusableExpressions
+                      : review.reusablePhrases.map((p) => ({
+                          english: p,
+                          meaningZh: "",
+                          useWhen: "",
+                        }))
+                    ).map((e) => (
+                      <tr key={e.english}>
+                        <td>{e.english}</td>
+                        <td>{e.meaningZh}</td>
+                        <td>{e.useWhen}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
               <h2 style={{ marginTop: 18 }}>
-                {tr(lang, "Today's improvement areas", "今日改进点", "오늘 개선 포인트")}
+                {tr(lang, "Voice & delivery", "声音与表达", "보이스 & 전달")}
+              </h2>
+              <div className="polished-box voice-box">{review.voiceCoaching}</div>
+
+              <h2 style={{ marginTop: 18 }}>
+                {tr(lang, "Micro practice", "微练习", "마이크로 연습")}
+              </h2>
+              <p>{review.microPractice}</p>
+
+              <h2 style={{ marginTop: 18 }}>
+                {tr(lang, "Progress", "进度跟踪", "진행 추적")}
               </h2>
               <ul className="area-list">
-                {review.improvementAreas.map((a) => (
-                  <li key={a}>{a.replaceAll("_", " ")}</li>
-                ))}
+                <li>
+                  <strong>{tr(lang, "Went well: ", "今天做得好：", "잘한 점: ")}</strong>
+                  {review.progress?.wentWell}
+                </li>
+                <li>
+                  <strong>{tr(lang, "Focus: ", "最需改进：", "집중 개선: ")}</strong>
+                  {review.progress?.focusArea}
+                </li>
+                <li>
+                  <strong>{tr(lang, "Next: ", "明天建议：", "다음: ")}</strong>
+                  {review.progress?.nextSkill}
+                </li>
               </ul>
 
               <h2 style={{ marginTop: 18 }}>{tr(lang, "Score", "评分", "점수")}</h2>
@@ -603,7 +744,7 @@ export default function Page() {
                   onClick={() => recordAction("followed")}
                   disabled={actionTaken !== null}
                 >
-                  {tr(lang, "Accept", "采纳", "수락")}
+                  {tr(lang, "Accept & advance day", "采纳并进入下一天", "수락 후 다음 날")}
                 </button>
                 <button
                   className="btn"
@@ -624,6 +765,14 @@ export default function Page() {
                 <p style={{ marginTop: 10, color: "var(--muted)", fontSize: "0.86rem" }}>
                   {tr(lang, "Recorded: ", "已记录:", "기록됨: ")}
                   {actionTaken}
+                  {actionTaken !== "ignored"
+                    ? tr(
+                        lang,
+                        ` · Next curriculum day: ${profile.curriculumDay}`,
+                        ` · 下一课程日：${profile.curriculumDay}`,
+                        ` · 다음 커리큘럼: ${profile.curriculumDay}일`,
+                      )
+                    : ""}
                 </p>
               ) : null}
             </section>
@@ -654,12 +803,111 @@ export default function Page() {
             </section>
           ) : null}
 
+          <section className="card" id="faq" aria-label="FAQ">
+            <h2>
+              <Icon name="book" />
+              {tr(lang, "FAQ", "常见问题", "FAQ")}
+            </h2>
+            <div className="faq-list">
+              <details className="faq-item" open>
+                <summary>
+                  {tr(
+                    lang,
+                    "How is this different from Grammarly?",
+                    "和 Grammarly 有什么不同？",
+                    "Grammarly와 무엇이 다른가요?",
+                  )}
+                </summary>
+                <p>
+                  {tr(
+                    lang,
+                    "Grammarly fixes grammar. This coach trains senior workplace communication: trust, conflict, feedback, and next steps in real engineering scenarios.",
+                    "Grammarly 纠正语法。本教练训练资深职场沟通：信任、冲突、反馈与下一步，场景来自真实工程工作。",
+                    "Grammarly는 문법을 고칩니다. 이 코치는 신뢰·갈등·피드백·다음 단계 등 시니어 직장 소통을 실제 엔지니어링 시나리오로 훈련합니다.",
+                  )}
+                </p>
+              </details>
+              <details className="faq-item">
+                <summary>
+                  {tr(
+                    lang,
+                    "How long does daily practice take?",
+                    "每天练习多久？",
+                    "매일 연습은 얼마나 걸리나요?",
+                  )}
+                </summary>
+                <p>
+                  {tr(
+                    lang,
+                    "About 10–15 minutes: one skill, one scenario, 5–10 sentences, then Level 1/2/3 review.",
+                    "大约 10–15 分钟：一个技能、一个场景、写 5–10 句，再看 Correct / Natural / Senior 三层评审。",
+                    "약 10–15분: 스킬 하나, 시나리오 하나, 5–10문장 작성 후 Level 1/2/3 리뷰.",
+                  )}
+                </p>
+              </details>
+              <details className="faq-item">
+                <summary>
+                  {tr(
+                    lang,
+                    "Which languages are supported?",
+                    "支持哪些语言？",
+                    "어떤 언어를 지원하나요?",
+                  )}
+                </summary>
+                <p>
+                  {tr(
+                    lang,
+                    "UI: English, 中文, 한국어. Explanations can be English, Chinese, or bilingual.",
+                    "界面：English / 中文 / 한국어。讲解可为英文、中文或双语。",
+                    "UI: English / 中文 / 한국어. 설명은 영어, 중국어 또는 이중 언어.",
+                  )}
+                </p>
+              </details>
+              <details className="faq-item">
+                <summary>
+                  {tr(
+                    lang,
+                    "Do I need an API key?",
+                    "需要 API key 吗？",
+                    "API 키가 필요한가요?",
+                  )}
+                </summary>
+                <p>
+                  {tr(
+                    lang,
+                    "No. A 14-day scenario bank and rule-based reviewer run offline. An Anthropic key optionally upgrades quality.",
+                    "不需要。14 天场景库与规则评审可离线运行。配置 Anthropic key 可升级质量。",
+                    "아니요. 14일 시나리오 뱅크와 규칙 기반 리뷰가 오프라인으로 동작합니다. Anthropic 키는 선택적으로 품질을 올립니다.",
+                  )}
+                </p>
+              </details>
+              <details className="faq-item">
+                <summary>
+                  {tr(
+                    lang,
+                    "Is this certified language assessment?",
+                    "这是认证语言测评吗？",
+                    "공인 언어 평가인가요?",
+                  )}
+                </summary>
+                <p>
+                  {tr(
+                    lang,
+                    "No. Communication practice only — not a certified exam or career advice. Verify wording before sending it.",
+                    "不是。仅供沟通练习——非认证考试或职业建议。发送前请自行核实措辞。",
+                    "아닙니다. 커뮤니케이션 연습용이며 공인 시험이나 커리어 조언이 아닙니다. 보내기 전 문장을 확인하세요.",
+                  )}
+                </p>
+              </details>
+            </div>
+          </section>
+
           <p className="disclaimer">
             {tr(
               lang,
-              "XingAI Engineering English Coach provides communication practice, not certified language assessment. Reviews may be generated by an offline rule-based engine or an LLM, depending on configuration. Verify before sending suggested wording.",
-              "XingAI 工程英语教练提供的是沟通练习,不是认证语言测评。评审可能来自规则引擎或 LLM。发送建议措辞前请自行核对。",
-              "XingAI 엔지니어링 영어 코치는 커뮤니케이션 연습용이며 공인 평가가 아닙니다. 제안 문장을 보내기 전에 확인하세요.",
+              "XingAI Engineering Communication Coach provides communication practice, not certified language assessment. Reviews may come from an offline rule-based engine or an LLM. Verify before sending suggested wording.",
+              "XingAI 工程沟通教练提供的是沟通练习，不是认证语言测评。评审可能来自规则引擎或 LLM。发送建议措辞前请自行核对。",
+              "XingAI 엔지니어링 커뮤니케이션 코치는 연습용이며 공인 평가가 아닙니다. 제안 문장을 보내기 전에 확인하세요.",
             )}
           </p>
 

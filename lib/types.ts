@@ -1,8 +1,5 @@
-// Core data model for XingAI Engineering English Coach.
-//
-// ExerciseReview intentionally mirrors the shared XingAI Decision shape
-// (see lib/decision-ledger.ts) rather than inventing an independent memory
-// schema — see docs/adr/001-decision-ledger-adoption.md.
+// Core data model for XingAI Engineering Communication & Charisma Coach.
+// ExerciseReview mirrors the shared XingAI Decision shape — see ADR-001.
 
 export type EnglishLevel = "beginner" | "intermediate" | "advanced";
 
@@ -17,8 +14,27 @@ export type Difficulty = "auto" | "basic" | "intermediate" | "advanced";
 export type ActionTaken = "followed" | "ignored" | "modified" | null;
 
 export const EXERCISE_CATEGORIES = [
+  "first_impression",
+  "trust",
+  "confidence",
+  "design_review",
+  "technical_story",
+  "voice_body",
+  "read_room",
+  "difficult_feedback",
+  "defensive_people",
+  "say_no",
+  "interrupt_redirect",
+  "defuse_conflict",
+  "leader_listen",
+  "small_talk",
+  "executive",
+  "architecture_influence",
+  "incident_leadership",
+  "stakeholder",
+  "negotiation",
+  // legacy aliases kept for older sessions
   "bug_investigation",
-  "work_item_comment",
   "pr_description",
   "code_review",
   "architecture_review",
@@ -32,6 +48,7 @@ export const EXERCISE_CATEGORIES = [
   "meeting_discussion",
   "project_planning",
   "engineering_management",
+  "work_item_comment",
 ] as const;
 
 export type ExerciseCategory = (typeof EXERCISE_CATEGORIES)[number];
@@ -44,7 +61,7 @@ export interface UserLearningProfile {
   currentRole: string;
   targetRole: string;
   technicalAreas: string[];
-  weakAreas: string[]; // derived view — refreshed from decisions.risks, not hand-written
+  weakAreas: string[];
   preferredChannels: DeliveryChannel[];
   schedule: {
     frequency: Frequency;
@@ -52,6 +69,8 @@ export interface UserLearningProfile {
     timezone: string;
   };
   difficulty: Difficulty;
+  /** 1-based curriculum day; advances after completed reviews when tracked by client */
+  curriculumDay: number;
 }
 
 export const DEFAULT_PROFILE: UserLearningProfile = {
@@ -60,8 +79,8 @@ export const DEFAULT_PROFILE: UserLearningProfile = {
   preferredFeedbackLanguage: "bilingual",
   englishLevel: "intermediate",
   currentRole: "Software Engineer",
-  targetRole: "Senior Engineer",
-  technicalAreas: ["Backend", "Cloud"],
+  targetRole: "Senior Engineer / Architect",
+  technicalAreas: ["Azure", ".NET", "C#", "Microservices", "APIs"],
   weakAreas: [],
   preferredChannels: ["app"],
   schedule: {
@@ -70,20 +89,30 @@ export const DEFAULT_PROFILE: UserLearningProfile = {
     timezone: "auto",
   },
   difficulty: "auto",
+  curriculumDay: 1,
 };
 
 export interface DailyExercise {
   id: string;
   userId: string;
+  dayNumber: number;
+  skillTitle: string;
+  skillTitleZh: string;
+  skillWhyZh: string;
   title: string;
   category: ExerciseCategory;
+  scenarioType: string;
   scenario: string;
   role: string;
   audience: string;
+  problem: string;
   communicationGoal: string;
+  potentialRisk: string;
   requiredPoints: string[];
+  hints: string[];
   optionalOpeningSentence?: string;
-  difficulty: number; // 1-5
+  closingPrompt: string;
+  difficulty: number;
   scheduledAt: string;
   status: "scheduled" | "delivered" | "started" | "completed";
   source: "heuristic" | "llm";
@@ -92,22 +121,47 @@ export interface DailyExercise {
 export interface SentenceReview {
   original: string;
   improved: string;
-  explanation: string;
+  issue: string;
+  explanation: string; // why more natural / listener impact
+}
+
+export interface ReusableExpression {
+  english: string;
+  meaningZh: string;
+  useWhen: string;
+}
+
+export interface ImprovementLevels {
+  correct: string;
+  natural: string;
+  senior: string;
+}
+
+export interface ProgressNotes {
+  wentWell: string;
+  focusArea: string;
+  nextSkill: string;
 }
 
 export interface ExerciseReview {
   exerciseId: string;
-  decisionId: string; // this review IS a Decision row — see decision-ledger.ts
+  decisionId: string;
   userResponse: string;
   sentenceReviews: SentenceReview[];
-  polishedVersion: string; // == Decision.recommendation
-  reusablePhrases: string[]; // == Decision.alternatives
-  improvementAreas: string[]; // == Decision.risks
+  levels: ImprovementLevels;
+  polishedVersion: string;
+  reusablePhrases: string[];
+  reusableExpressions: ReusableExpression[];
+  voiceCoaching: string;
+  microPractice: string;
+  progress: ProgressNotes;
+  improvementAreas: string[];
   score: {
     grammar: number;
     clarity: number;
     professionalism: number;
     leadershipTone: number;
+    confidence: number;
     technicalPrecision: number;
   };
   source: "heuristic" | "llm";

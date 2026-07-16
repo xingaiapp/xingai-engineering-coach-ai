@@ -3,8 +3,8 @@ import Link from "next/link";
 import "../../globals.css";
 
 export const metadata: Metadata = {
-  title: "Terms of Service · XingAI Engineering English Coach",
-  description: "Terms of Service for XingAI Engineering English Coach.",
+  title: "Terms of Service · XingAI Engineering Communication Coach",
+  description: "Terms of Service for XingAI Engineering Communication Coach.",
   alternates: { canonical: "/legal/terms" },
 };
 
@@ -22,7 +22,7 @@ export default function TermsPage() {
   return (
     <main className="legal-page">
       <p className="legal-back">
-        <Link href="/">← Engineering English Coach</Link>
+        <Link href="/">← Engineering Communication Coach</Link>
       </p>
 
       <article className="legal-article" lang="en">
@@ -30,7 +30,7 @@ export default function TermsPage() {
         <p className="legal-updated">Last updated: {updated}</p>
         <Section title="1. Service">
           <p>
-            XingAI Engineering English Coach provides educational communication
+            XingAI Engineering Communication Coach provides educational communication
             practice for engineers. Outputs are suggestions, not certified language
             assessment or professional career advice.
           </p>

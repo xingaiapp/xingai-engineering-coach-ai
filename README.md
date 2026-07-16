@@ -1,27 +1,40 @@
-# XingAI Engineering English Coach
+# XingAI Engineering Communication Coach
 
-**Version:** 0.1.1  
+**Version:** 0.2.1  
 **Repo:** [xingaiapp/xingai-engineering-coach-ai](https://github.com/xingaiapp/xingai-engineering-coach-ai)  
 **Planned URL:** https://engineering-coach.xingai.app
 
-Help non-native English-speaking engineers communicate like senior engineers and
-engineering managers — risk, decision, impact, ownership, and next-step language.
+Help non-native English-speaking engineers communicate like Senior Engineers, Architects, Tech Leads, and Engineering Managers — trust, conflict, feedback, charisma, and leadership English in real workplace scenarios.
 
 **Tagline:** Communicate like a senior engineer—not just a fluent English speaker.
 
 中文: [README.zh.md](README.zh.md)
 
-## Status (0.1.1) — project-init baseline
+## Status (0.2.1) — Communication & Charisma + ship checklist
 
-- Mobile-first chrome: top bar, drawer, bottom tabs, desktop side nav (open/collapsed)
-- Locales: **en / zh / ko** (persisted); light + dark theme (no-flash boot)
-- Hero light/dark pair: `public/brand/hero-bg-light-visual.png` + `hero-bg-visual.png`
-- Favicon / app icon: `app/icon.svg` + `public/icon.svg`
-- Legal (EN+中文+한국어 on each page): `/legal/privacy`, `/legal/terms`, `/legal/disclaimer`
-- SEO/AEO: metadata + OG/Twitter, `public/robots.txt`, `public/sitemap.xml`, `public/llms.txt`, FAQ + SoftwareApplication JSON-LD
-- Registered on [xingai.app](https://xingai.app) apps catalog as **coming soon** (`engineering-coach`)
-- Deterministic scenario + review engines; optional Anthropic upgrade via `ANTHROPIC_API_KEY`
-- Decision ledger shape: `docs/adr/001-decision-ledger-adoption.md`
+- Core Master Prompt: Engineering Communication & Charisma Coach (`lib/prompts.ts`)
+- **14-day curriculum** + advanced cycle (`lib/curriculum.ts`)
+- Mobile-first chrome: top / drawer / bottom tabs / desktop side nav; safe areas; 44px targets
+- Review UI: stacked sentence cards on phone (not wide 4-col tables); expression table scrolls
+- Visible homepage FAQ + FAQPage / SoftwareApplication JSON-LD (synced with `llms.txt`)
+- SEO: metadataBase, canonical, OG/Twitter, robots (`Disallow: /api/`), sitemap, apple-touch-icon
+- Locales en/zh/ko; light/dark no-flash boot; legal EN+中文+한국어
+- Registered on xingai.app as **coming soon** (`engineering-coach`)
+
+### Project-init checklist
+
+- [x] Mobile-first ~375px; safe areas; bottom nav clearance
+- [x] Top bar, drawer, footbar, desktop side menu open/collapsed
+- [x] Logo, favicon, apple-touch-icon, OG separate from hero
+- [x] In-app hero light + dark (mobile strip + desktop column)
+- [x] EN / zh / ko; light / dark
+- [x] Privacy, Terms, Disclaimer linked
+- [x] SEO metadata + robots + sitemap
+- [x] llms.txt + FAQ + JSON-LD
+- [x] Registered in xingai-dot-app (`src` + `srcDark`)
+- [x] .env.example + README
+- [ ] Login / Google OAuth — N/A (no auth yet)
+- [ ] Live domain deploy — planned
 
 ### Getting started
 
@@ -40,17 +53,12 @@ npm run dev
 | `npm run build` | Production build |
 | `npm run lint` | `tsc --noEmit` |
 
-### Deploy notes
-
-- Vercel: see `vercel.json` (`npm ci` + `next build`)
-- Set `SITE_URL=https://engineering-coach.xingai.app` in production
-- Domain not required for local demo; mark **Soon** on marketing until live
-
 **Still not production-ready:** in-memory session storage only; no Email/Push; no weekly report worker.
 
 ## Architecture
 
 - Thin API routes; generation/scoring in `lib/*-engine.ts`
+- Decision ledger: `docs/adr/001-decision-ledger-adoption.md`
 - Theme tokens in `app/globals.css` (`data-theme`)
 
 ## Disclaimer
