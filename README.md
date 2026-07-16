@@ -1,6 +1,6 @@
 # XingAI Engineering Communication Coach
 
-**Version:** 0.2.1  
+**Version:** 0.2.2  
 **Repo:** [xingaiapp/xingai-engineering-coach-ai](https://github.com/xingaiapp/xingai-engineering-coach-ai)  
 **Planned URL:** https://engineering-coach.xingai.app
 
@@ -10,10 +10,11 @@ Help non-native English-speaking engineers communicate like Senior Engineers, Ar
 
 中文: [README.zh.md](README.zh.md)
 
-## Status (0.2.1) — Communication & Charisma + ship checklist
+## Status (0.2.2) — Communication & Charisma + ship checklist
 
 - Core Master Prompt: Engineering Communication & Charisma Coach (`lib/prompts.ts`)
-- **14-day curriculum** + advanced cycle (`lib/curriculum.ts`)
+- **14-day curriculum** + advanced cycle (`lib/curriculum.ts`) — ADR: [`002-14-day-communication-curriculum.md`](docs/adr/002-14-day-communication-curriculum.md) · [中文](docs/adr/002-14-day-communication-curriculum.zh.md)
+- Decision ledger: [`001-decision-ledger-adoption.md`](docs/adr/001-decision-ledger-adoption.md)
 - Mobile-first chrome: top / drawer / bottom tabs / desktop side nav; safe areas; 44px targets
 - Review UI: stacked sentence cards on phone (not wide 4-col tables); expression table scrolls
 - Visible homepage FAQ + FAQPage / SoftwareApplication JSON-LD (synced with `llms.txt`)

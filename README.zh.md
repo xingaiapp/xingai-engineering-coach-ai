@@ -1,6 +1,6 @@
 # XingAI 工程沟通与魅力教练
 
-**版本:** 0.2.1  
+**版本:** 0.2.2  
 English: [README.md](README.md)  
 **计划域名:** https://engineering-coach.xingai.app
 
@@ -8,9 +8,10 @@ English: [README.md](README.md)
 
 面向非英语母语软件工程师的 **Engineering Communication & Charisma** 训练：信任、冲突、困难反馈、礼貌拒绝、会议主持、架构讲解与领导者式倾听——场景偏 Azure / .NET / 微服务 / 事故沟通。
 
-## 状态（0.2.1）
+## 状态（0.2.2）
 
-- 核心 Master Prompt + **14 天课程** + 进阶循环
+- 核心 Master Prompt + **14 天课程** + 进阶循环 — ADR: [`002-14-day-communication-curriculum.zh.md`](docs/adr/002-14-day-communication-curriculum.zh.md) · [EN](docs/adr/002-14-day-communication-curriculum.md)
+- 决策账本: [`001-decision-ledger-adoption.md`](docs/adr/001-decision-ledger-adoption.md)
 - 移动优先 chrome / en·zh·ko / 浅深色 / 法律三页
 - 首页可见 FAQ + JSON-LD；`robots.txt` / `sitemap.xml` / `llms.txt` / OG + apple-touch-icon
 - 手机端逐句评审用卡片堆叠，避免宽表挤爆 375px
